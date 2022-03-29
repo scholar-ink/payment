@@ -1,0 +1,4 @@
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/scholar-ink/go-pkcs12 v0.0.0-20190709100334-019e469c9be2 h1:C4XgEG7BTauniN1anvYDScL2/uud4JSEtcXS574WTZI=
+github.com/scholar-ink/go-pkcs12 v0.0.0-20190709100334-019e469c9be2/go.mod h1:GBLSaaEtyzfkxOFhRguaOdqdupP5hx6vr4URRyc+rCw=
