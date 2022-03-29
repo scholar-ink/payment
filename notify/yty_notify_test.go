@@ -1,0 +1,21 @@
+package notify
+
+import (
+	"fmt"
+	"testing"
+)
+
+func TestYtNotify_Handle(t *testing.T) {
+	notify := new(YtyNotify)
+
+	ret := `{"encd":"u8ovx/6HJemO5VN2s1At67CX5bSLtQrhFWO7C5gE4tkNPo0+IZq82B3TSgq35aInd0ncrj83MwTVKEYaV10XGgU+s6JAAayGGpjUTh5+F1lsYAHLkwk4+YF65eBTtE+1XOxqxkvJz5XxLFd0doVrttdrwYZ10dG6eZR4D5kyharCAKI5SMrh1GaoRJVGQBLLjeKGVR42+8lkpRP7V2jUAC73NahOBhxfGwm0gVgjGeEEIon7YZp+HHzlNbXFzz8Azsx4lBWOSJ4WfR3aq+KL4iqAkKh5ZZtH3yeCwlKXdM6Aeb9F224TfTw1aMtBTj1/k5mdOnfIBuASpCIKQjKpsTMXjUzTtF6RTWxjfnnch6jsL/95uh1mIEF8bZRqhdsk","sign":"bDknP8bOIx5u8vb9SdjFHvvAp+VXMz9jY5FBPYkge9hhetp3pMQXTnmWCopAlYShNh6RyK98MOmm0akrD6MGuMTLe+xU+dH4ITVU2AotRGoSWhVEDvLqE6gUMbkbNuQ5JmfCaBeVseOnQQXWlnn7SVeXWnaR77X02iZ2wA2JEhE=","enck":"g2FPTO2K1um/nuqpq2N/6s+DSsR0/hmEN5lWTBEEf06nxn+CdfZofWgXX/f1o6snsAH7QRlAiG7szWwU/E/oCytGW+X5jLpKMexPZbI6YR05Q5tF6nUyq4iNWrnvsB/eKGjvbpBhIP2q9TNya+Ab1Zra4AMnELjHLxcL0cFhFeM="}`
+
+	retData := notify.Handle(ret, func() (md5Key string, err error) {
+		return "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALSAIqdFDAFWLm8HkPbYfOPmbM96qTKfR91B6tHR7FVixeicZbw11CWIw8O56dKQ0wotZTrWC75yvXpn2dTdkQgZp9cytXZ6MLnfiKvj+032wnAU3ZMESc/Onrhf589nWC6RvIy26tIQ0yUR5HLrpEN+A4qVDVqd00TQZc8YRoHtAgMBAAECgYA94uj+vNe+5ZOKEegMGnHHmcuY349/gckb/WvLgNQs+m6ssGLZQwN30wp74xReU7Vn+eSJZbYlGCYK/+xZ5ZXBw5uVhlDCmjWmFGVZVpiOibQStPqPFen4qhLMMsP8pZtJOagIjaGfMc9Wf36f/fJ3LFLXz3E7wjLsUmDslnDZKQJBAOLd2nu40Fw2FAVwEHd+5GbSkDWNw0HdlUbBHWV+fEUnLsiIE+Hw1nT6oOHfPMml5naKd8BLmkYUC2kfa9rFWh8CQQDLrgQTZ0bQtYjpzVkj3k+D1KnVuizy1LIQs4oZSMU0YBaVfUVLQZzHubTNpAMzH5hmfXg/fz+QKD0aSjRmTDpzAkBWHZqqrhvBdPGioshNY8h1U2ZUPcypeuAILJPpC9tGMLpsemL5t/7gBqb9Nk0Pyj6yLpuITepwwXkXXUsGjzVHAkEAhgBlxBJFX9ifTBsC03tWWwhV+Dw1iElxIVXNvJbIz42MLiutpDZ1nF1MW6LVTBQ0YvGXZEcmnYQrtxks4kSyiwJAWE+xShtaoOLI0mdOBMAI2amJWpBV4NCvHhVbWwh5F0Jxq3S79mXqvnWOsXBefjKZVFBCnqjlMFsExv6WEifCQg==", nil
+	}, func(data *YtyNotifyData) error {
+		fmt.Printf("%+v", data)
+		return nil
+	})
+
+	fmt.Println(retData)
+}

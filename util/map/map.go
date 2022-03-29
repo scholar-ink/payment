@@ -1,18 +1,49 @@
-package helper
+package maps
 
 import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
+	"io"
+	"net/url"
 	"reflect"
 	"sort"
 	"strconv"
 )
 
-func RemoveKeys(inputs *map[string]string, keys ...string) {
+type xmlMapEntry struct {
+	XMLName xml.Name
+	Value   string `xml:",chardata"`
 }
 
+func Struct2Map(obj interface{}) map[string]interface{} {
+
+	b, err := json.Marshal(obj)
+
+	m := make(map[string]interface{})
+
+	if err != nil {
+		return m
+	}
+
+	err = json.Unmarshal(b, &m)
+
+	return m
+}
+
+func Values2Map(values url.Values) map[string]interface{} {
+	mapData := make(map[string]interface{})
+
+	for k, v := range values {
+		if len(v) > 0 {
+			mapData[k] = v[0]
+		} else {
+			mapData[k] = ""
+		}
+	}
+
+	return mapData
+}
 func KSort(inputs *map[string]interface{}) {
 
 	var keys []string
@@ -48,19 +79,15 @@ func CreateLinkString(inputs *map[string]interface{}) string {
 
 	for _, k := range keys {
 
-		if k != "sign" && k != "paySign" && k != "sign_type" && k != "pic_file" {
-
-			v := (*inputs)[k]
-
-			if v == reflect.Zero(reflect.TypeOf(v)).Interface() {
-				continue
-			}
+		if k != "sign" && k != "paySign" {
 
 			prefix := k + "="
 
 			if buf.Len() > 0 {
 				buf.WriteByte('&')
 			}
+
+			v := (*inputs)[k]
 
 			rt := reflect.TypeOf(v)
 
@@ -69,6 +96,8 @@ func CreateLinkString(inputs *map[string]interface{}) string {
 			switch rt.Kind() {
 			case reflect.Int:
 				buf.WriteString(strconv.Itoa(v.(int)))
+			case reflect.Int64:
+				buf.WriteString(strconv.FormatInt(v.(int64), 10))
 			case reflect.Float64:
 				buf.WriteString(strconv.Itoa(int(v.(float64))))
 			case reflect.String:
@@ -79,54 +108,29 @@ func CreateLinkString(inputs *map[string]interface{}) string {
 	return buf.String()
 }
 
-func ToXml(values interface{}) string {
+func Map2Values(inputs *map[string]interface{}) url.Values {
 
-	b, err := xml.Marshal(values)
+	values := url.Values{}
 
-	fmt.Println(err)
+	for k, v := range *inputs {
+		rt := reflect.TypeOf(v)
 
-	fmt.Println(string(b))
+		var value string
 
-	//xml := "<xml>"
-	//
-	//for k,v := range *values{
-	//	if reflect.TypeOf(v).Kind() == reflect.Int{
-	//		xml+="/<"+k+"/>"+v+"/<"+k+"/>"
-	//	}
-	//}
-
-	return ""
-
-}
-
-func MarshalXML(values *map[string]interface{}, b *bytes.Buffer, start xml.StartElement) error {
-
-	e := xml.NewEncoder(b)
-
-	tokens := []xml.Token{start}
-
-	for key, value := range *values {
-		t := xml.StartElement{Name: xml.Name{"", key}}
-
-		tokens = append(tokens, t, xml.CharData(value.(string)), xml.EndElement{t.Name})
-	}
-
-	tokens = append(tokens, xml.EndElement{start.Name})
-
-	for _, t := range tokens {
-		err := e.EncodeToken(t)
-		if err != nil {
-			return err
+		switch rt.Kind() {
+		case reflect.Int:
+			value = strconv.Itoa(v.(int))
+		case reflect.Int64:
+			value = strconv.FormatInt(v.(int64), 10)
+		case reflect.Float64:
+			value = strconv.Itoa(int(v.(float64)))
+		case reflect.String:
+			value = v.(string)
 		}
+		values.Add(k, value)
 	}
 
-	// flush to ensure tokens are written
-	err := e.Flush()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return values
 }
 
 type StringMap map[string]string
@@ -158,18 +162,19 @@ func (s StringMap) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 	return nil
 }
+func (s *StringMap) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	*s = StringMap{}
+	for {
+		var e xmlMapEntry
 
-func Struct2Map(obj interface{}) map[string]interface{} {
+		err := d.Decode(&e)
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return err
+		}
 
-	b, err := json.Marshal(obj)
-
-	m := make(map[string]interface{})
-
-	if err != nil {
-		return m
+		(*s)[e.XMLName.Local] = e.Value
 	}
-
-	err = json.Unmarshal(b, &m)
-
-	return m
+	return nil
 }

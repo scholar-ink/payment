@@ -1,0 +1,37 @@
+/**
+ * @author dengmeiyu
+ * @since 20180716
+ */
+package alipay
+
+import (
+	"fmt"
+	"testing"
+)
+
+func TestAliQuery_Handle(t *testing.T) {
+	var privateKey = "MIIEpAIBAAKCAQEA8DIJqC8hNAakgp2ihz22uQHQcB1C64VL0akBzMeVFpLlNqSEkJox0vROxzw/G4/2/dv21lIzWzrg9KvIYBIZQEoBsMaL7kSr7864sIsbOFwecjJB3y8Z0lwTNM/omM0sExTumnQ98Da3Z0BuVakb0EC4T9iwbMIPy6N3BoQNL0CdxMS+11H9NdUyfjrdaj+L7tHRnb2PTCT9oNd7dOdh+1HU0R4haD5H7zZd/H5354HX9fRRoteIE+RLlwENuk4qp+4DyQ+J75OH/VJdTUjZrH3naL7stacmcYBVYTq+pHRJzpiiQX6cheABuTcE0/vd4bHTgFLw800hNv1lSETsPQIDAQABAoIBAF2TYOfA1LKsE9M/Dl6Z0GHrLwU+oR+YYp1ftm/NIWwV9m5/UZX0PIzu2PINqphWUec8lsGQbKmSGqm3cuzaoDPHoTj5YPKGlmVqp9E/oG8olEPxCHCmrOyjKmhcx0UgSZd1hC9wMeEvr+vt0g5VP5y2WhfhV3pHcFfpaymCsJBDXvKnfzGWaNYpPoz1LXqy2hdmPOxsSOwXRdP/PPvO46KzvrK3NqwlzVQPzElMwpjIt50oZh0z+l0aO2bgHzD1m7Gt1Xh9SUzqFfp4kqUmGWX89tXFJYsy4ev+j4ZysfuJCNMpmfhaGB02M88IRZ4D9Ab8xTpkzKvBgo72EltkxxECgYEA/RVLYN3QKRGKTm79XP925eEh1Msz+aD1rsUlSvcP/yWjIQs7zsG/BWzrQOenZyNJEc4aKySqLSgY6cSAreAgWenEeFtyZzQmsQWe9KH7FS/49fzRnBP3JhjIBS60ESYP20gcSlKDQlGNAMvRqz0HVsif04uzwoTHJa94o95sbEMCgYEA8va4CPpfl++m41sLWBI5qTMF+QaVZw+mUzJvkAjunQNo+6jJpLb55AoVNPlRB86oBoxHXiUKGxnKahz77AOFUkEDu5KlBMpkG4tOsK7n6VfrIFGeB/7FPx/iWYg2I7SWCjeIH5q3pdoufxcQ1seCKdxhkavEnDKfWMW3rXc//X8CgYEAunwNbhQkBY8CLadFFFi9oMgSaL1O0BtVzXFBeIqyg9yU5o1jhYdoHTRT6SCJTstGVVNcHvxGVT3dlauQ8g5baEWD2vfvRbK86+XrafFNlSAjQAcJ4QspKy5JfOAcGSLFvlvVVMKWK7DxyGtnVNmEZeMxOe0QCT5TjCZPK9iCZgcCgYEAkbunG8uCN1JKWiksHsGf0HuIY5ytVMowS8r+2/hfl9KJ0BmoCaKvNTdPDR1Wm0Y7xuGxlSjGbQcFQKzt9t0NxQ62PHZzgPIdJeBjbNscw/w2ToZmMgmBKqHnVSi8wKH7NVmlzr8w1MyQAy9ErG+zBYTpCUVsgvxiVA8UY3oZ6eUCgYBeY/Inz/Opa3dGlgAv8d6iFaeSGTqLGrPYJ6+wf22uPxzChHyw+o6IONv9E4zr/epZYtA4SEnWVkYcEO2eXuBtmPjlJjNpdq/q/8RTM7gKFR3+r2+M8x3zMvsL5YSroDabfDJpTPcDAt+qZLdhwgy3d2TWqLXfTWh30XOn4LMAeA=="
+	var aliPublicKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqFQajy7Q1Li5M6UCSLr2
+9ERyuBeM9PULJQ4Qk4QyAbpLeCGNS1caKa9XZFAY13bZHj7A2Ruu0Ngz9uT8//3Z
+4YngNuDt19vR6DsNtYoPVfO3Sah0dJVdsw+Jz+D+PY7Dx1CIirispgMvQHut1+WT
+9S5FnCgA96IFiDMXd4TdaDbVe+NpomR0X0fN3ATVxlZ7dkeZuly6e7EwMhVfxbwi
+VH1PK03HqcgxCV+kWMBD7/qDJmP3G0rNAqez5BE3JkVKhSxOK+JcCa4J4m98x7nK
+xccG/S87k8UGQkceUt8owhP+oBsMGC/ccb7g/tjlv8ZXKfIABCL5IxqvD/T8kI6a
+7QIDAQAB
+-----END PUBLIC KEY-----`
+	app := new(AliQuery)
+
+	app.InitBaseConfig(&BaseAliConfig{
+		AppId:        "2017122701286469",
+		AppAuthToken: "201801BBe10810a6828f40328bf24cabdc748X87",
+	})
+
+	ret, err := app.Handle(map[string]interface{}{
+		"out_trade_no": "0001_2018062107025369531",
+	}, privateKey, aliPublicKey)
+
+	fmt.Printf("%+v", ret)
+
+	fmt.Println(err)
+}

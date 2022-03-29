@@ -1,21 +1,50 @@
-package helper
+package http
 
 import (
 	"crypto/tls"
+	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"time"
 )
 
-func NewHttpClient(timeout ...time.Duration) *http.Client {
-	client := *http.DefaultClient
+const (
+	MaxIdleConnections = 60
+	RequestTimeout     = 60
+)
 
-	if len(timeout) > 0 {
-		client.Timeout = timeout[0]
-	} else {
-		client.Timeout = time.Second * 5
+var (
+	Client *http.Client
+)
+
+func init() {
+	Client = newHttpClient()
+}
+
+const (
+	ProxyUserName = "16MVTUSM"
+	ProxyPassword = "027366"
+	ProxyServer   = "p5.t.16yun.cn:6445"
+)
+
+func newHttpClient() *http.Client {
+	client := &http.Client{
+		Transport: &http.Transport{
+			DisableKeepAlives: false,
+			DialContext: (&net.Dialer{
+				Timeout:   10 * time.Second, //连接超时时间
+				KeepAlive: 30 * time.Second, //连接保持超时时间
+			}).DialContext,
+			MaxIdleConnsPerHost:   MaxIdleConnections,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: 10 * time.Second,
+			TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
+		},
+		Timeout: time.Duration(RequestTimeout) * time.Second,
 	}
-	return &client
+
+	return client
 }
 
 func NewTLSHttpClient(certFile, keyFile string) (httpClient *http.Client) {
@@ -71,4 +100,31 @@ func NewTLSBlockHttpClient(certPEMBlock, keyPEMBlock []byte) (httpClient *http.C
 		},
 		Timeout: 5 * time.Second,
 	}
+}
+
+func NewHttpRequest(method, url string, body io.Reader) *http.Request {
+
+	request, _ := http.NewRequest(method, url, body)
+
+	return request
+}
+
+func GetBytes(url string) ([]byte, error) {
+	request := NewHttpRequest("GET", url, nil)
+
+	rsp, err := Client.Do(request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rsp.Body.Close()
+
+	b, err := ioutil.ReadAll(rsp.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }
